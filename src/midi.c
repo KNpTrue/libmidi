@@ -103,7 +103,7 @@ struct midi_if *midi_if_create(enum midi_if_type type)
     return NULL;
 }
 
-void midi_if_in_register_event_cb(struct midi_if *pif, midi_in_event_cb_t cb)
+void midi_in_register_event_cb(struct midi_if *pif, midi_in_event_cb_t cb)
 {
     MIDI_ASSERT(pif);
     MIDI_ASSERT(pif->type == MIDI_IF_TYPE_IN);
@@ -112,7 +112,7 @@ void midi_if_in_register_event_cb(struct midi_if *pif, midi_in_event_cb_t cb)
     pif->cb.in_event_cb = cb;
 }
 
-void midi_if_out_register_send_cb(struct midi_if *pif, midi_out_send_cb_t cb, void *arg)
+void midi_out_register_send_cb(struct midi_if *pif, midi_out_send_cb_t cb, void *arg)
 {
     MIDI_ASSERT(pif);
     MIDI_ASSERT(pif->type == MIDI_IF_TYPE_OUT);
@@ -187,4 +187,33 @@ int midi_out_report_event(struct midi_if *pif, enum midi_event evt, ...)
         break;
     }
     return ret;
+}
+
+int midi_out_report_note(struct midi_if *pif, char chan, char onoff, char note, char v)
+{
+    struct midi_chan_msg msg;
+
+    MIDI_ASSERT(pif);
+    MIDI_ASSERT(chan >= 1 && chan <= 16);
+    MIDI_ASSERT(onoff == 0 || onoff == 1);
+    MIDI_ASSERT(note >= 0);
+    MIDI_ASSERT(v >= 0);
+    msg.chan = chan;
+    msg.data[0] = note;
+    msg.data[1] = v;
+    return midi_out_report_event(pif, onoff ? EVT_CHAN_NOTE_ON : EVT_CHAN_NOTE_OFF, &msg);
+}
+
+int midi_out_report_control_change(struct midi_if *pif, char chan, char ctrl, char v)
+{
+    struct midi_chan_msg msg;
+
+    MIDI_ASSERT(pif);
+    MIDI_ASSERT(chan >= 1 && chan <= 16);
+    MIDI_ASSERT(ctrl >= 0);
+    MIDI_ASSERT(v >= 0);
+    msg.chan = chan;
+    msg.data[0] = ctrl;
+    msg.data[1] = v;
+    return midi_out_report_event(pif, EVT_CHAN_CONTROL_CHANGE, &msg);
 }

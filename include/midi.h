@@ -28,6 +28,26 @@
 
 #include <midi_config.h>
 
+/**
+ * Define the maximum count of interfaces in
+ * midi_config.h that can be created.
+*/
+#ifndef MIDI_IF_COUNT_MAX
+#define MIDI_IF_COUNT_MAX   8
+#endif /* MIDI_IF_COUNT_MAX */
+
+/**
+ * Define MIDI_ASSERT(expr) in midi_config.h
+ * then you can check the incoming variables.
+ * @code
+ *     #include <assert.h>
+ *     #define MIDI_ASSERT(expr) assert(expr)
+ * @endcode
+*/
+#ifndef MIDI_ASSERT
+#define MIDI_ASSERT(expr)   /* not defined */
+#endif /* MIDI_ASSERT */
+
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -138,7 +158,7 @@ void midi_if_destory(struct midi_if *pif);
  * @param pif is a point to MIDI IN interface
  * @param cb is an event callback.
 */
-void midi_if_in_register_event_cb(struct midi_if *pif, midi_in_event_cb_t cb);
+void midi_in_register_event_cb(struct midi_if *pif, midi_in_event_cb_t cb);
 
 /**
  * @brief Register send callback to MIDI OUT interface.
@@ -147,7 +167,7 @@ void midi_if_in_register_event_cb(struct midi_if *pif, midi_in_event_cb_t cb);
  * @param cb is a send callback
  * @param arg is the parameter of the send callback
 */
-void midi_if_out_register_send_cb(struct midi_if *pif, midi_out_send_cb_t cb, void *arg);
+void midi_out_register_send_cb(struct midi_if *pif, midi_out_send_cb_t cb, void *arg);
 
 /**
  * @brief Analysis MIDI IN data stream to trigger MIDI events.
@@ -159,7 +179,7 @@ void midi_if_out_register_send_cb(struct midi_if *pif, midi_out_send_cb_t cb, vo
 void midi_in_recv(struct midi_if *pif, void *data, unsigned int len);
 
 /**
- * @brief Send event to MIDI OUT interface.
+ * @brief Report event to MIDI OUT interface.
  *
  * @param pif is a point to MIDI OUT interface
  * @param evt is the event to report
@@ -168,6 +188,31 @@ void midi_in_recv(struct midi_if *pif, void *data, unsigned int len);
  * @return 0 on success, or -1 on failed
 */
 int midi_out_report_event(struct midi_if *pif, enum midi_event evt, ...);
+
+/**
+ * @brief Report note event to MIDI OUT interface.
+ *
+ * @param pif is a point to MIDI OUT interface
+ * @param chan is the MIDI channel(1-16)
+ * @param onoff is a Boolean value to control note on of off(0/1)
+ * @param note is the note number
+ * @param v is the velocity of the note(0-127)
+ * @return 0 on success, or -1 on failed
+*/
+int midi_out_report_note(struct midi_if *pif, char chan, char onoff, char note, char v);
+
+/**
+ * @brief Report control change event to MIDI OUT interface.
+ *
+ * @note Controllers include devices such as pedals and levers.
+ * Controller numbers 120-127 are reserved as "Channel Mode Messages".
+ *
+ * @param pif is a point to MIDI OUT interface
+ * @param pif is the MIDI channel(1-16)
+ * @param ctrl is the controller number.(0-127)
+ * @return 0 on success, or -1 on failed
+*/
+int midi_out_report_control_change(struct midi_if *pif, char chan, char ctrl, char v);
 
 #ifdef	__cplusplus
 }

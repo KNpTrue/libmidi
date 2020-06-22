@@ -22,18 +22,4 @@
 #ifndef __MIDI_CONFIG_H_
 #define __MIDI_CONFIG_H_
 
-#define MIDI_IF_COUNT_MAX   8
-
-/**
- * Define MIDI_ASSERT(expr), you can check the incoming variables.
- * @code
- *     #include <assert.h>
- *     #define MIDI_ASSERT(expr) assert(expr)
- * @endcode
-*/
-#ifndef MIDI_ASSERT
-#define MIDI_ASSERT(expr)   /* not defined */
-#endif
-
-
 #endif /* __MIDI_CONFIG_H_ */

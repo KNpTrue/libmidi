@@ -20,6 +20,7 @@
 # SOFTWARE.
 #
 
+cmake_minimum_required(VERSION 3.16)
 project(midi)
 
 # Directory macro
@@ -34,3 +35,4 @@ include_directories(${INC_DIR})
 
 # Add source to libmidi
 add_library(midi SHARED ${SRC_DIR}/midi.c)
+target_include_directories(midi PRIVATE ${INC_DIR}/config)
